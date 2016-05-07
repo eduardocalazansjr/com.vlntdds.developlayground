@@ -6,7 +6,7 @@ I promisse that i will do code-comments everywhere that i can.
 ### Rules
 > Se não sabe brincar, não desce pro play
 
-### Stuffs under development/testing:
+### Stuffs under development/testing
 * N/A
 
 ### Stuffs already deployed
@@ -16,6 +16,5 @@ I promisse that i will do code-comments everywhere that i can.
 Want to contribute? Great!  
 Just open an issue or do a pull request :)
 
-License
-----
+###License
 MIT
