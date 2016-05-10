@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.OrientationListener;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,8 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.vlntdds.developlayground.R;
+import java.io.IOException;
+import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -58,7 +62,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
     @BindView(R.id.btn_takepic)
     View btn_takepic;
 
-    /* Just keep an Listener to tell the orientation of the taken picture */
+    /* Just keep an listener to tell the orientation of the taken picture */
     @Override
     public void onAttach(Context c ) {
         super.onAttach(c);
@@ -74,6 +78,25 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
             mIDCamera = b.getInt("id_camera");
             mFlashType = b.getString("flash_type");
             mImageParams = b.getParcelable("image_info");
+        }
+    }
+
+    @Override
+    public void onStop() {
+        mOrientationListener.disable();
+        if (mCamera != null) {
+            stopPreviewer();
+            mCamera.release();
+            mCamera = null;
+        }
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mCamera == null) {
+            restartPreviewer();
         }
     }
 
@@ -142,8 +165,8 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
                     mIDCamera = Camera.CameraInfo.CAMERA_FACING_BACK;
                 else
                     mIDCamera = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                restartPreviewer();
             }
-            restartPreviewer();
         });
 
         btn_flash.setOnClickListener(new View.OnClickListener() {
@@ -173,25 +196,148 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback, 
         });
     }
 
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
+        mSurface = holder;
+        getCamera(mIDCamera);
+        startPreviewer();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
     }
 
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
+    }
 
+    /* Start Camera Previewer */
+    private void startPreviewer() {
+        getDisplayOrientation();
+        configureCamera();
+
+        try {
+            mCamera.setPreviewDisplay(mSurface);
+            mCamera.startPreview();
+            mSafeToTakePic = true;
+            CameraPreviewer.CameraIsReadyToFocus = true;
+        } catch (IOException e) {
+            Log.d("DevelopmentPlayground", "IOException on Camera" + e);
+            e.printStackTrace();
+        }
+    }
+
+    /* Stop Camera Previewer */
+    private void stopPreviewer() {
+        mSafeToTakePic = false;
+        CameraPreviewer.CameraIsReadyToFocus = false;
+        mCamera.stopPreview();
+        CameraPreviewer.mCamera = null;
+    }
+
+    /* Restart Camera Previewer */
+    private void restartPreviewer() {
+        if (mCamera != null) {
+            stopPreviewer();
+            mCamera.release();
+            mCamera = null;
+        }
+        getCamera(mIDCamera);
+        startPreviewer();
+    }
+
+    /* Early-setup the camera */
+    private void configureCamera() {
+        Camera.Parameters p = mCamera.getParameters();
+        Camera.Size previewSize = determineBestSize(p.getSupportedPreviewSizes());
+        Camera.Size photoSize = determineBestSize(p.getSupportedPictureSizes());
+        p.setPreviewSize(previewSize.width, previewSize.height);
+        p.setPictureSize(photoSize.width, photoSize.height);
+
+        /* Hide/Un-hide the Flash Button */
+        List<String> flashTypes = p.getSupportedFlashModes();
+        if (flashTypes != null && flashTypes.contains(mFlashType)) {
+            p.setFlashMode(mFlashType);
+            btn_flash.setVisibility(View.VISIBLE);
+        } else {
+            btn_flash.setVisibility(View.INVISIBLE);
+        }
+
+        /* Set-up the Focus Mode */
+        if (p.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            p.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        }
+    }
+
+    /* Determine Display and Camera Orientation */
+    private void getDisplayOrientation() {
+        Camera.CameraInfo i = new Camera.CameraInfo();
+        Camera.getCameraInfo(mIDCamera, i);
+        int degrees = 0;
+        int orientation;
+
+        /* Get the Device Rotation */
+        switch(getActivity().getWindowManager().getDefaultDisplay().getRotation()) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+
+        if (i.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            orientation = (i.orientation + degrees) % 360;
+            orientation = (360 - orientation) % 360;
+        } else {
+            orientation = (i.orientation - degrees + 360) % 360;
+        }
+
+        mImageParams.DisplayOrientation = orientation;
+        mImageParams.LayoutOrientation = degrees;
+        mCamera.setDisplayOrientation(mImageParams.DisplayOrientation);
+    }
+
+    /* Determine Camera Photo and Preview Resolution */
+    private Camera.Size determineBestSize(List<Camera.Size> sizes) {
+        Camera.Size r = null;
+        Camera.Size size;
+        int numOfSizes = sizes.size();
+        for (int i = 0; i < numOfSizes; i++) {
+            size = sizes.get(i);
+            boolean bratio = (size.width / 4) == (size.height / 3);
+            boolean bsize = (r == null) || size.width > r.width;
+            if (bratio && bsize) {
+                r = size;
+            }
+        }
+
+        if (r == null)
+            return sizes.get(sizes.size() - 1);
+        else
+            return r;
+    }
+
+
+
+    private void getCamera(int ID) {
+        try {
+            mCamera = Camera.open(ID);
+            CameraPreviewer.mCamera = mCamera;
+        } catch (Exception e) {
+            Log.d("DevelopmentPlayground", "Cannot open camera");
+            e.printStackTrace();
+        }
     }
 
     static class ImageParameters implements Parcelable {

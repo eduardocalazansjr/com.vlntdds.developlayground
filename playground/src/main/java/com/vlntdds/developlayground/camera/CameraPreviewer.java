@@ -21,12 +21,12 @@ import java.util.List;
 public class CameraPreviewer extends SurfaceView {
 
     private static final double PHOTO_RATIO = 3.0 / 4.0;
-    private Camera mCamera;
+    public static Camera mCamera;
     private int CameraMaxZoom;
     private boolean CameraSupportsZoom;
     private boolean CameraIsFocused;
     private int CameraZoomFactor = 1;
-    private boolean CameraIsReadyToFocus;
+    public static boolean CameraIsReadyToFocus;
     private Camera.Area CameraFocusArea;
     private ArrayList<Camera.Area> CameraFocusAreas;
     private ScaleGestureDetector mScaleGestureDetector;
