@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Developlayground</string>
+
+    <!-- SquareCamera -->
+    <string name="flash_mode_off">Off</string>
+    <string name="flash_mode_on">On</string>
+    <string name="flash_mode_auto">Auto</string>
+    <string name="acessibility_camera_switch">Camera Switch Button</string>
+    <string name="acessibility_takeapic">Capture Picture Button</string>
+    <string name="acessibility_toggle_flash">Toggle Flash Mode Button</string>
 </resources>

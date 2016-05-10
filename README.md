@@ -1,4 +1,4 @@
-# VLNTDDS Awesome Android Playground
+﻿# VLNTDDS Awesome Android Playground
 
 Just a simple repo for testing new Android functionalities and new useful Libraries.    
 I promisse that i will do code-comments everywhere that i can.
@@ -7,7 +7,7 @@ I promisse that i will do code-comments everywhere that i can.
 > Se não sabe brincar, não desce pro play
 
 ### Stuffs under development/testing
-* N/A
+* Camera Fragment - Square-like camera with 1:1 proportion (like instagram) with flash and camera-switch options.
 
 ### Stuffs already deployed
 * N/A
