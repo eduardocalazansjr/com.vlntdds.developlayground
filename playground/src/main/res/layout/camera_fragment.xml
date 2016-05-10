@@ -1,0 +1,84 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.vlntdds.developlayground.camera.CameraPreviewer
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <View
+        android:id="@+id/top_border"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_alignTop="@id/camera_preview"
+        android:background="#000000"/>
+
+    <View
+        android:id="@+id/bottom_border"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_alignBottom="@id/camera_preview"
+        android:background="#000000"/>
+
+    <LinearLayout
+        android:id="@+id/tools_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/camera_preview"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:background="#000000"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/btn_cameraswitch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/camera_ic_camera"
+            android:layout_weight="1"
+            android:contentDescription="@string/acessibility_camera_switch" />
+
+        <ImageView
+            android:id="@+id/btn_takepic"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/camera_btn_capture"
+            android:layout_weight="1"
+            android:contentDescription="@string/acessibility_takeapic"/>
+
+        <LinearLayout
+            android:id="@+id/btn_flash"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:contentDescription="@string/acessibility_toggle_flash">
+
+<!--            <ImageView
+                android:id="@+id/ic_flash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/squarecamera__toggle_flash"
+                android:contentDescription="@string/acessibility_camera_switch"/> -->
+
+            <TextView
+                android:drawableStart="@drawable/camera_ic_flash"
+                android:id="@+id/ic_flash_auto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_gravity="center_vertical"
+                android:text="@string/flash_mode_off"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
