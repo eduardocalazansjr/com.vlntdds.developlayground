@@ -23,16 +23,14 @@ public class CameraPreviewer extends SurfaceView {
     private static final double PHOTO_RATIO = 3.0 / 4.0;
     public static Camera mCamera;
     private int CameraMaxZoom;
-    private boolean CameraSupportsZoom;
     private boolean CameraIsFocused;
     private int CameraZoomFactor = 1;
-    public static boolean CameraIsReadyToFocus;
+    public boolean CameraIsReadyToFocus;
     private Camera.Area CameraFocusArea;
     private ArrayList<Camera.Area> CameraFocusAreas;
     private ScaleGestureDetector mScaleGestureDetector;
     private float LastTouchPointX;
     private float LastTouchPointY;
-    private int mActivePointer = -1;
 
     public CameraPreviewer(Context c) {
         super(c);
@@ -86,14 +84,13 @@ public class CameraPreviewer extends SurfaceView {
             case MotionEvent.ACTION_UP:
                 if (CameraIsFocused && CameraIsReadyToFocus)
                     focusHandler(mCamera.getParameters());
-                mActivePointer = -1;
                 break;
 
             case MotionEvent.ACTION_DOWN:
                 CameraIsFocused = true;
                 LastTouchPointX = e.getX();
                 LastTouchPointY = e.getY();
-                mActivePointer = e.getPointerId(0);
+                e.getPointerId(0);
                 break;
 
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -102,7 +99,6 @@ public class CameraPreviewer extends SurfaceView {
                 break;
 
             case MotionEvent.ACTION_CANCEL:
-                mActivePointer = -1;
                 break;
 
         }
@@ -114,8 +110,8 @@ public class CameraPreviewer extends SurfaceView {
 
         if (camera != null) {
             Camera.Parameters p = camera.getParameters();
-            CameraSupportsZoom = p.isZoomSupported();
-            if (CameraSupportsZoom)
+            boolean cameraSupportsZoom = p.isZoomSupported();
+            if (cameraSupportsZoom)
                 CameraMaxZoom = p.getMaxZoom();
         }
     }

@@ -1,0 +1,39 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <View
+        android:id="@+id/top_border"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+    <com.vlntdds.developlayground.camera.PhotoEditView
+        android:id="@+id/photoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_border"
+        android:scaleType="centerCrop"/>
+
+    <ImageButton
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/camera_btn_save"
+        android:background="@android:color/transparent"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/acessibility_savepic"/>
+
+    <ImageButton
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:src="@drawable/camera_btn_cancel"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/acessibility_discardpic"
+        android:onClick="onCancel"/>
+
+</RelativeLayout>

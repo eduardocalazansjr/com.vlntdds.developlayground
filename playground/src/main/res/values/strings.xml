@@ -8,4 +8,9 @@
     <string name="acessibility_camera_switch">Camera Switch Button</string>
     <string name="acessibility_takeapic">Capture Picture Button</string>
     <string name="acessibility_toggle_flash">Toggle Flash Mode Button</string>
+    <string name="acessibility_savepic">Save Picture Button</string>
+    <string name="acessibility_discardpic">Discard Picture Button</string>
+
+    <!-- Permissions -->
+    <string name="permissions_request">Approval is needed to use this feature</string>
 </resources>
