@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,7 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +25,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-
 import com.vlntdds.developlayground.R;
 import com.vlntdds.developlayground.permissions.RuntimePermissionsActivity;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,7 +34,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -44,10 +42,10 @@ import butterknife.ButterKnife;
  * Edit Fragment to let the user draw on the picture and save/discard
  */
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "SuspiciousNameCombination"})
 public class PhotoEditFragment extends Fragment {
 
-    @BindView(R.id.photoView) ImageView photoView;
+    @BindView(R.id.photoView) PhotoEditView photoView;
     @BindView(R.id.top_border) View top_border;
     @BindView(R.id.btn_save) ImageButton btn_save;
     @BindView(R.id.btn_cancel) ImageView btn_cancel;
@@ -95,8 +93,6 @@ public class PhotoEditFragment extends Fragment {
                 savePhoto();
             }
         });
-
-
     }
 
     /* Check Permissions before save photo */
@@ -168,6 +164,10 @@ public class PhotoEditFragment extends Fragment {
 
     private void rotatePhoto(int r, byte[] data) {
         Bitmap b = decodeSampledBitmapFromByte(getActivity(), data);
+        DisplayMetrics display = new DisplayMetrics();
+        this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(display);
+        float factor;
+
         if (r != 0) {
             Bitmap b2 = b;
 
@@ -176,7 +176,16 @@ public class PhotoEditFragment extends Fragment {
             b = Bitmap.createBitmap(b2, 0, 0, b2.getWidth(), b2.getHeight(), m, false);
             b2.recycle();
         }
+
+        if (b.getWidth() > b.getHeight())
+            factor = display.heightPixels / (float) b.getHeight();
+        else
+            factor = display.widthPixels / (float) b.getWidth();
+
+        b = Bitmap.createScaledBitmap(b, (int)(b.getWidth() * factor),(int)(b.getHeight() * factor), false);
+        photoView.mBitmap = b;
         photoView.setImageBitmap(b);
+        photoView.mCanvas = new Canvas(b);
     }
 
     private static Bitmap decodeSampledBitmapFromByte(Context context, byte[] bitmapBytes) {
