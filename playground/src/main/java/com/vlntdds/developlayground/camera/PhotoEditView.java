@@ -37,7 +37,7 @@ public class PhotoEditView extends ImageView {
         init();
     }
 
-    private void init() {
+    public void init() {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
@@ -61,12 +61,20 @@ public class PhotoEditView extends ImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        int sdf = canvas.getHeight();
-        int sdf2 = canvas.getWidth();
         super.onDraw(canvas);
         canvas.drawColor(0xFFAAAAAA);
         canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
         canvas.drawPath(mPath, mPaint);
+    }
+
+    public void destroyView() {
+        mPaint = null;
+        mBitmap.recycle();
+        mBitmap = null;
+        mCanvas = null;
+        mPath = null;
+        mBitmapPaint = null;
+        System.gc();
     }
 
     private float mX, mY;

@@ -24,7 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import com.vlntdds.developlayground.R;
 import com.vlntdds.developlayground.permissions.RuntimePermissionsActivity;
 import java.io.ByteArrayOutputStream;
@@ -45,10 +45,14 @@ import butterknife.ButterKnife;
 @SuppressWarnings({"deprecation", "SuspiciousNameCombination"})
 public class PhotoEditFragment extends Fragment {
 
-    @BindView(R.id.photoView) PhotoEditView photoView;
+    @BindView(R.id.photoView) LinearLayout photoView;
     @BindView(R.id.top_border) View top_border;
     @BindView(R.id.btn_save) ImageButton btn_save;
-    @BindView(R.id.btn_cancel) ImageView btn_cancel;
+    @BindView(R.id.btn_cancel) ImageButton btn_cancel;
+    @BindView(R.id.btn_undo) ImageButton btn_undo;
+    DisplayMetrics display = new DisplayMetrics();
+    int rotation;
+    byte[] data;
 
     public static Fragment newInstance(byte[] bitmapByteArray, int rotation, CameraFragment.ImageParameters parameters) {
         Fragment f = new PhotoEditFragment();
@@ -65,6 +69,7 @@ public class PhotoEditFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater i, ViewGroup c, Bundle b) {
         View v = i.inflate(R.layout.camera_editfragment, c, false);
+        this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(display);
         ButterKnife.bind(this, v);
         return v;
     }
@@ -74,8 +79,8 @@ public class PhotoEditFragment extends Fragment {
         super.onViewCreated(v, b);
         ButterKnife.bind(this.getActivity());
 
-        int rotation = getArguments().getInt("photo_rotation");
-        byte[] data = getArguments().getByteArray("photo_array");
+        rotation = getArguments().getInt("photo_rotation");
+        data = getArguments().getByteArray("photo_array");
         CameraFragment.ImageParameters params = getArguments().getParcelable("photo_info");
         if (params == null) return;
 
@@ -93,11 +98,27 @@ public class PhotoEditFragment extends Fragment {
                 savePhoto();
             }
         });
+        btn_undo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                undoDraw();
+            }
+        });
     }
 
     /* Check Permissions before save photo */
     private void savePhoto() {
         RuntimePermissionsActivity.startActivity(PhotoEditFragment.this, 1, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    /* Undo Drawing on Photo */
+    private void undoDraw() {
+        PhotoEditView v = (PhotoEditView) photoView.findViewWithTag("view");
+        v.invalidate();
+        v.destroyView();
+        v.destroyDrawingCache();
+        photoView.removeAllViews();
+        rotatePhoto(rotation, data);
     }
 
     @Override
@@ -108,7 +129,8 @@ public class PhotoEditFragment extends Fragment {
             View v = getView();
             if (d.getBooleanExtra(RuntimePermissionsActivity.REQUESTED_PERMISSION, false) && v != null)
             {
-                Bitmap b = ((BitmapDrawable) photoView.getDrawable()).getBitmap();
+                PhotoEditView view = (PhotoEditView)photoView.findViewWithTag("view");
+                Bitmap b = ((BitmapDrawable) view.getDrawable()).getBitmap();
                 Uri photoUri = savePicture(getActivity(), b);
                 ((CameraActivity) getActivity()).returnPhotoUri(photoUri);
             }
@@ -164,13 +186,10 @@ public class PhotoEditFragment extends Fragment {
 
     private void rotatePhoto(int r, byte[] data) {
         Bitmap b = decodeSampledBitmapFromByte(getActivity(), data);
-        DisplayMetrics display = new DisplayMetrics();
-        this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(display);
         float factor;
 
         if (r != 0) {
             Bitmap b2 = b;
-
             Matrix m = new Matrix();
             m.postRotate(r);
             b = Bitmap.createBitmap(b2, 0, 0, b2.getWidth(), b2.getHeight(), m, false);
@@ -183,9 +202,15 @@ public class PhotoEditFragment extends Fragment {
             factor = display.widthPixels / (float) b.getWidth();
 
         b = Bitmap.createScaledBitmap(b, (int)(b.getWidth() * factor),(int)(b.getHeight() * factor), false);
-        photoView.mBitmap = b;
-        photoView.setImageBitmap(b);
-        photoView.mCanvas = new Canvas(b);
+
+        PhotoEditView v = new PhotoEditView(this.getActivity());
+        v.setTag("view");
+        photoView.addView(v);
+        v = (PhotoEditView) photoView.findViewWithTag("view");
+        v.getLayoutParams().width = display.widthPixels;
+        v.getLayoutParams().height = display.widthPixels;
+        v.mBitmap = b;
+        v.mCanvas = new Canvas(v.mBitmap);
     }
 
     private static Bitmap decodeSampledBitmapFromByte(Context context, byte[] bitmapBytes) {
