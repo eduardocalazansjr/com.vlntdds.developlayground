@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/mt_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:cardBackgroundColor="@color/searchBarPrimaryColor"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        app:cardPreventCornerOverlap="false" >
+
+        <RelativeLayout
+            android:id="@+id/root"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:orientation="vertical"
+            android:background="#202627">
+
+            <TextView
+                android:id="@+id/searchbar_placeholder"
+                android:background="@drawable/searchbarplaceholderbg"
+                android:textSize="14sp"
+                android:textColor="#8E8E93"
+                android:gravity="center"
+                android:layout_centerInParent="true"
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
+                android:visibility="gone"
+                android:text="Buscar"/>
+
+            <LinearLayout
+                android:id="@+id/inputContainer"
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:id="@+id/textinputContainer"
+                    android:background="@drawable/searchbarplaceholderbg"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="28dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:layout_marginLeft="30dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:textColor="#FFFFFF"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textSize="14sp"
+                        tools:text="game of thrones"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="15dp"
+                    android:textSize="17sp"
+                    android:textColor="#E14B4B"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    android:text="Cancelar" />
+
+                <!--
+                <ImageView
+                    android:id="@+id/mt_arrow"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_arrow_left_black_48dp"
+                    android:visibility="visible"/>
+
+                <EditText
+                    android:id="@+id/mt_editText"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/action_search"
+                    android:imeOptions="flagNoExtractUi|actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textCursorDrawable="@drawable/color_cursor"
+                    android:visibility="visible"/>
+
+                <ImageView
+                    android:id="@+id/mt_clear"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_close_black_48dp"/> -->
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</merge>
